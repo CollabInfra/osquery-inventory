@@ -1,0 +1,37 @@
+---
+# Role metadata for OSQuery
+galaxy_info:
+  author: OSQuery Deployer
+  description: Deploy and configure OSQuery across Linux, macOS, and Windows
+  company: 
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: EL
+      versions:
+        - 7
+        - 8
+        - 9
+    - name: macOS
+      versions:
+        - all
+    - name: Windows
+      versions:
+        - 2016
+        - 2019
+        - 2022
+  galaxy_tags:
+    - osquery
+    - security
+    - monitoring
+    - logging
+
+dependencies: []

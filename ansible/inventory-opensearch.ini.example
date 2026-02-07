@@ -1,0 +1,40 @@
+# Inventaire avec AWS OpenSearch activé
+# Les logs OSQuery sont envoyés vers AWS OpenSearch via Fluent Bit
+
+[linux_debian]
+web01 ansible_host=10.0.1.10 ansible_user=ubuntu
+web02 ansible_host=10.0.1.11 ansible_user=ubuntu
+
+[linux_redhat]
+app01 ansible_host=10.0.2.10 ansible_user=ec2-user
+app02 ansible_host=10.0.2.11 ansible_user=ec2-user
+
+[macos]
+dev-mac ansible_host=10.0.3.10 ansible_user=admin
+
+[windows]
+win-server-01 ansible_host=10.0.4.10 ansible_user=Administrator ansible_connection=winrm ansible_winrm_transport=ntlm
+
+[production:children]
+linux_debian
+linux_redhat
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+# OpenSearch Configuration (global)
+enable_opensearch_forwarding=true
+opensearch_endpoint=search-production-abc123.us-east-1.es.amazonaws.com
+opensearch_region=us-east-1
+opensearch_port=443
+opensearch_index_prefix=osquery
+opensearch_environment=production
+opensearch_tls_verify=On
+
+# Per-group overrides
+[linux_debian:vars]
+osquery_log_dir=/var/log/osquery
+
+[windows:vars]
+osquery_log_dir=C:\\ProgramData\\osquery\\log
+opensearch_region=eu-west-1

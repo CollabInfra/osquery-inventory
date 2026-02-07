@@ -1,0 +1,46 @@
+---
+# Fluent Bit installation for macOS
+- name: Install Fluent Bit on macOS
+  community.general.homebrew:
+    name: fluent-bit
+    state: present
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Create Fluent Bit configuration directory
+  ansible.builtin.file:
+    path: /usr/local/etc/fluent-bit
+    state: directory
+    owner: root
+    group: wheel
+    mode: '0755'
+  become: yes
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit configuration for OSQuery
+  ansible.builtin.template:
+    src: fluent-bit-macos.conf.j2
+    dest: /usr/local/etc/fluent-bit/fluent-bit.conf
+    owner: root
+    group: wheel
+    mode: '0644'
+  become: yes
+  notify: restart fluent-bit macos
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit parsers configuration
+  ansible.builtin.template:
+    src: fluent-bit-parsers.conf.j2
+    dest: /usr/local/etc/fluent-bit/parsers.conf
+    owner: root
+    group: wheel
+    mode: '0644'
+  become: yes
+  notify: restart fluent-bit macos
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Start Fluent Bit service
+  ansible.builtin.command: brew services start fluent-bit
+  register: brew_result
+  changed_when: "'Successfully started' in brew_result.stdout"
+  failed_when: false
+  when: enable_opensearch_forwarding | default(false)

@@ -1,0 +1,53 @@
+---
+# OSQuery installation for RedHat-based systems
+- name: Add OSQuery GPG key
+  ansible.builtin.rpm_key:
+    key: https://pkg.osquery.io/rpm/GPG
+    state: present
+  become: yes
+
+- name: Add OSQuery repository
+  ansible.builtin.yum_repository:
+    name: osquery_s3-rpm
+    description: OSQuery Repository
+    baseurl: https://pkg.osquery.io/rpm/el$releasever/$basearch
+    gpgcheck: yes
+    gpgkey: https://pkg.osquery.io/rpm/GPG
+    enabled: yes
+  become: yes
+
+- name: Install OSQuery
+  ansible.builtin.yum:
+    name: osquery
+    state: present
+  become: yes
+
+- name: Create OSQuery log directory
+  ansible.builtin.file:
+    path: "{{ osquery_log_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: yes
+
+- name: Deploy OSQuery configuration
+  ansible.builtin.template:
+    src: osquery-linux.conf.j2
+    dest: /etc/osquery/osquery.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart osquery
+
+- name: Enable and start OSQuery service
+  ansible.builtin.systemd:
+    name: osqueryd
+    enabled: yes
+    state: started
+  become: yes
+
+# Include Fluent Bit installation tasks
+- name: Include Fluent Bit tasks
+  include_tasks: fluent-bit-redhat.yaml

@@ -1,0 +1,88 @@
+---
+# Playbook spécifique pour déploiement avec OpenSearch
+# Usage: ansible-playbook playbook-opensearch.yaml
+
+- name: Deploy OSQuery with AWS OpenSearch Integration
+  hosts: all
+  become: yes
+  
+  # Pré-tâches: Vérifier les variables requises
+  pre_tasks:
+    - name: Vérifier que l'endpoint OpenSearch est défini
+      ansible.builtin.assert:
+        that:
+          - opensearch_endpoint is defined
+          - opensearch_endpoint | length > 0
+        fail_msg: "La variable 'opensearch_endpoint' doit être définie"
+        success_msg: "Endpoint OpenSearch configuré: {{ opensearch_endpoint }}"
+      when: enable_opensearch_forwarding | default(false)
+
+    - name: Vérifier que la région AWS est définie
+      ansible.builtin.assert:
+        that:
+          - opensearch_region is defined
+          - opensearch_region | length > 0
+        fail_msg: "La variable 'opensearch_region' doit être définie"
+        success_msg: "Région AWS configurée: {{ opensearch_region }}"
+      when: enable_opensearch_forwarding | default(false)
+
+    - name: Afficher la configuration OpenSearch
+      ansible.builtin.debug:
+        msg:
+          - "OpenSearch Forwarding: {{ enable_opensearch_forwarding | default(false) }}"
+          - "Endpoint: {{ opensearch_endpoint | default('non défini') }}"
+          - "Region: {{ opensearch_region | default('non défini') }}"
+          - "Index Prefix: {{ opensearch_index_prefix | default('osquery') }}"
+          - "Environment: {{ opensearch_environment | default('production') }}"
+      when: enable_opensearch_forwarding | default(false)
+  
+  roles:
+    - osquery
+  
+  vars:
+    # Activer OpenSearch forwarding par défaut pour ce playbook
+    enable_opensearch_forwarding: true
+    
+    # Override log directories per OS family if needed
+    osquery_log_dir: "{{ osquery_log_dir_windows if ansible_os_family == 'Windows' else osquery_log_dir_macos if ansible_os_family == 'Darwin' else '/var/log/osquery' }}"
+  
+  # Post-tâches: Vérification
+  post_tasks:
+    - name: Vérifier que OSQuery est en cours d'exécution
+      ansible.builtin.service_facts:
+      when: ansible_os_family in ['Debian', 'RedHat']
+
+    - name: Afficher le statut OSQuery (Linux)
+      ansible.builtin.debug:
+        msg: "OSQuery service status: {{ ansible_facts.services['osqueryd.service'].state | default('unknown') }}"
+      when: 
+        - ansible_os_family in ['Debian', 'RedHat']
+        - ansible_facts.services is defined
+
+    - name: Vérifier que Fluent Bit est en cours d'exécution
+      ansible.builtin.service_facts:
+      when: 
+        - ansible_os_family in ['Debian', 'RedHat']
+        - enable_opensearch_forwarding | default(false)
+
+    - name: Afficher le statut Fluent Bit (Linux)
+      ansible.builtin.debug:
+        msg: "Fluent Bit service status: {{ ansible_facts.services['fluent-bit.service'].state | default('unknown') }}"
+      when: 
+        - ansible_os_family in ['Debian', 'RedHat']
+        - enable_opensearch_forwarding | default(false)
+        - ansible_facts.services is defined
+
+    - name: Instructions post-déploiement
+      ansible.builtin.debug:
+        msg:
+          - "✅ Déploiement OSQuery avec OpenSearch terminé!"
+          - ""
+          - "Prochaines étapes:"
+          - "1. Vérifier les logs OSQuery: tail -f /var/log/osquery/osqueryd.results.log"
+          - "2. Vérifier Fluent Bit: sudo systemctl status fluent-bit"
+          - "3. Vérifier dans OpenSearch Dashboards: https://{{ opensearch_endpoint }}/_dashboards"
+          - "4. Créer un index pattern: osquery-*"
+          - ""
+          - "Pour plus d'informations, consultez docs/OPENSEARCH.md"
+      run_once: true

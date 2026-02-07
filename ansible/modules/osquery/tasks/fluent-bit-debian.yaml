@@ -1,0 +1,59 @@
+---
+# Fluent Bit installation for Debian-based systems
+- name: Add Fluent Bit GPG key
+  ansible.builtin.apt_key:
+    url: https://packages.fluentbit.io/fluentbit.key
+    state: present
+  become: yes
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Add Fluent Bit repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://packages.fluentbit.io/{{ ansible_distribution | lower }}/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main"
+    state: present
+    filename: fluent-bit
+  become: yes
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Update apt cache for Fluent Bit
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Install Fluent Bit
+  ansible.builtin.apt:
+    name: fluent-bit
+    state: present
+  become: yes
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit configuration for OSQuery
+  ansible.builtin.template:
+    src: fluent-bit-linux.conf.j2
+    dest: /etc/fluent-bit/fluent-bit.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart fluent-bit
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit parsers configuration
+  ansible.builtin.template:
+    src: fluent-bit-parsers.conf.j2
+    dest: /etc/fluent-bit/parsers.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart fluent-bit
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Enable and start Fluent Bit service
+  ansible.builtin.systemd:
+    name: fluent-bit
+    enabled: yes
+    state: started
+  become: yes
+  when: enable_opensearch_forwarding | default(false)

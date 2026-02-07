@@ -1,0 +1,55 @@
+---
+# OSQuery installation for Debian-based systems
+- name: Add OSQuery GPG key
+  ansible.builtin.apt_key:
+    url: https://pkg.osquery.io/deb/pubkey.gpg
+    state: present
+  become: yes
+
+- name: Add OSQuery repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://pkg.osquery.io/deb deb main"
+    state: present
+    filename: osquery
+  become: yes
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+
+- name: Install OSQuery
+  ansible.builtin.apt:
+    name: osquery
+    state: present
+  become: yes
+
+- name: Create OSQuery log directory
+  ansible.builtin.file:
+    path: "{{ osquery_log_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: yes
+
+- name: Deploy OSQuery configuration
+  ansible.builtin.template:
+    src: osquery-linux.conf.j2
+    dest: /etc/osquery/osquery.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart osquery
+
+- name: Enable and start OSQuery service
+  ansible.builtin.systemd:
+    name: osqueryd
+    enabled: yes
+    state: started
+  become: yes
+
+# Include Fluent Bit installation tasks
+- name: Include Fluent Bit tasks
+  include_tasks: fluent-bit-debian.yaml

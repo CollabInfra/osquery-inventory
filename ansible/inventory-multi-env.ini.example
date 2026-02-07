@@ -1,0 +1,43 @@
+# Inventaire multi-environnements avec OpenSearch
+# Démontre la configuration par environnement
+
+[production_linux]
+prod-web-01 ansible_host=10.0.1.10 ansible_user=ubuntu
+prod-app-01 ansible_host=10.0.1.20 ansible_user=ubuntu
+
+[staging_linux]
+stage-web-01 ansible_host=10.0.2.10 ansible_user=ubuntu
+stage-app-01 ansible_host=10.0.2.20 ansible_user=ubuntu
+
+[development_linux]
+dev-web-01 ansible_host=10.0.3.10 ansible_user=ubuntu
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+enable_opensearch_forwarding=true
+
+# Production environment
+[production_linux:vars]
+opensearch_endpoint=search-prod-abc123.us-east-1.es.amazonaws.com
+opensearch_region=us-east-1
+opensearch_index_prefix=osquery-prod
+opensearch_environment=production
+
+# Staging environment
+[staging_linux:vars]
+opensearch_endpoint=search-staging-xyz789.us-west-2.es.amazonaws.com
+opensearch_region=us-west-2
+opensearch_index_prefix=osquery-staging
+opensearch_environment=staging
+
+# Development environment
+[development_linux:vars]
+opensearch_endpoint=search-dev-def456.eu-west-1.es.amazonaws.com
+opensearch_region=eu-west-1
+opensearch_index_prefix=osquery-dev
+opensearch_environment=development
+
+# Commandes d'utilisation:
+# ansible-playbook playbook.yaml --limit production_linux
+# ansible-playbook playbook.yaml --limit staging_linux
+# ansible-playbook playbook.yaml --limit development_linux

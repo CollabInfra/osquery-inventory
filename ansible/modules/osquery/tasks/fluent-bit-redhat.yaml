@@ -1,0 +1,49 @@
+---
+# Fluent Bit installation for RedHat-based systems
+- name: Add Fluent Bit repository
+  ansible.builtin.yum_repository:
+    name: fluent-bit
+    description: Fluent Bit Repository
+    baseurl: https://packages.fluentbit.io/centos/$releasever/$basearch
+    gpgcheck: yes
+    gpgkey: https://packages.fluentbit.io/fluentbit.key
+    enabled: yes
+  become: yes
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Install Fluent Bit
+  ansible.builtin.yum:
+    name: fluent-bit
+    state: present
+  become: yes
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit configuration for OSQuery
+  ansible.builtin.template:
+    src: fluent-bit-linux.conf.j2
+    dest: /etc/fluent-bit/fluent-bit.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart fluent-bit
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit parsers configuration
+  ansible.builtin.template:
+    src: fluent-bit-parsers.conf.j2
+    dest: /etc/fluent-bit/parsers.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart fluent-bit
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Enable and start Fluent Bit service
+  ansible.builtin.systemd:
+    name: fluent-bit
+    enabled: yes
+    state: started
+  become: yes
+  when: enable_opensearch_forwarding | default(false)

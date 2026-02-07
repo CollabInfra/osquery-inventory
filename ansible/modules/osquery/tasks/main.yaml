@@ -1,0 +1,13 @@
+---
+# Main task file for OSQuery installation
+- name: Include OS-specific tasks
+  include_tasks: "{{ ansible_os_family | lower }}.yaml"
+  when: ansible_os_family in ['Debian', 'RedHat']
+
+- name: Include macOS tasks
+  include_tasks: macos.yaml
+  when: ansible_os_family == 'Darwin'
+
+- name: Include Windows tasks
+  include_tasks: windows.yaml
+  when: ansible_os_family == 'Windows'

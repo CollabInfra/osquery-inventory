@@ -1,0 +1,17 @@
+---
+# Main playbook for OSQuery deployment
+- name: Deploy OSQuery across multiple platforms
+  hosts: all
+  become: yes
+  
+  roles:
+    - osquery
+  
+  vars:
+    # Override log directories per OS family if needed
+    osquery_log_dir: "{{ osquery_log_dir_windows if ansible_os_family == 'Windows' else osquery_log_dir_macos if ansible_os_family == 'Darwin' else '/var/log/osquery' }}"
+  
+  tasks:
+    - name: Display OSQuery deployment status
+      ansible.builtin.debug:
+        msg: "OSQuery successfully deployed on {{ inventory_hostname }} ({{ ansible_os_family }})"

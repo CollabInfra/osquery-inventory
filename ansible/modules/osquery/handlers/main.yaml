@@ -1,0 +1,41 @@
+---
+# Handlers for OSQuery service management
+
+- name: restart osquery
+  ansible.builtin.systemd:
+    name: osqueryd
+    state: restarted
+  become: yes
+  when: ansible_os_family in ['Debian', 'RedHat']
+
+- name: restart osquery macos
+  ansible.builtin.command: launchctl kickstart -k system/com.facebook.osqueryd
+  become: yes
+  when: ansible_os_family == 'Darwin'
+
+- name: restart osquery windows
+  ansible.windows.win_service:
+    name: osqueryd
+    state: restarted
+  when: ansible_os_family == 'Windows'
+
+# Handlers for Fluent Bit service management
+
+- name: restart fluent-bit
+  ansible.builtin.systemd:
+    name: fluent-bit
+    state: restarted
+  become: yes
+  when: ansible_os_family in ['Debian', 'RedHat']
+
+- name: restart fluent-bit macos
+  ansible.builtin.command: brew services restart fluent-bit
+  become: yes
+  when: ansible_os_family == 'Darwin'
+
+- name: restart fluent-bit windows
+  ansible.windows.win_service:
+    name: fluent-bit
+    state: restarted
+  when: ansible_os_family == 'Windows'
+

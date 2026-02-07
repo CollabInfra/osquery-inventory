@@ -1,0 +1,36 @@
+---
+# OSQuery installation for macOS
+- name: Install osquery on macOS
+  community.general.homebrew_cask:
+    name: osquery
+    state: present
+
+- name: Create OSQuery log directory
+  ansible.builtin.file:
+    path: "{{ osquery_log_dir }}"
+    state: directory
+    owner: root
+    group: wheel
+    mode: '0755'
+  become: yes
+
+- name: Deploy OSQuery configuration
+  ansible.builtin.template:
+    src: osquery-macos.conf.j2
+    dest: /var/osquery/osquery.conf
+    owner: root
+    group: wheel
+    mode: '0644'
+  become: yes
+  notify: restart osquery
+
+- name: Load OSQuery launchd service
+  ansible.builtin.command: launchctl load /Library/LaunchDaemons/com.facebook.osqueryd.plist
+  become: yes
+  register: launchctl_result
+  changed_when: launchctl_result.rc == 0
+  failed_when: false
+
+# Include Fluent Bit installation tasks
+- name: Include Fluent Bit tasks
+  include_tasks: fluent-bit-macos.yaml

@@ -1,0 +1,32 @@
+---
+# Default variables for OSQuery role
+osquery_log_dir: "/var/log/osquery"
+
+# Windows specific log directory (override for Windows hosts)
+# osquery_log_dir_windows: "C:\\ProgramData\\osquery\\log"
+
+# macOS specific log directory (override for macOS hosts)
+# osquery_log_dir_macos: "/var/log/osquery"
+
+# OSQuery version (for Windows)
+osquery_version: "5.11.0"
+
+# Fluent Bit version (for Windows)
+fluent_bit_version: "2.2.2"
+
+# OpenSearch forwarding configuration
+enable_opensearch_forwarding: false
+
+# AWS OpenSearch configuration (required if enable_opensearch_forwarding is true)
+# opensearch_endpoint: "search-my-domain-abc123.us-east-1.es.amazonaws.com"
+# opensearch_region: "us-east-1"
+# opensearch_port: 443
+# opensearch_index_prefix: "osquery"
+# opensearch_environment: "production"
+# opensearch_tls_verify: "On"
+
+# Alternative: Use basic auth instead of AWS Auth (for self-managed OpenSearch)
+# opensearch_use_basic_auth: false
+# opensearch_username: "admin"
+# opensearch_password: "admin"
+

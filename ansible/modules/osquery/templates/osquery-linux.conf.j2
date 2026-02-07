@@ -1,0 +1,78 @@
+{
+  "options": {
+    "config_plugin": "filesystem",
+    "logger_plugin": "filesystem",
+    "logger_path": "{{ osquery_log_dir }}",
+    "disable_logging": "false",
+    "log_result_events": "true",
+    "schedule_splay_percent": "10",
+    "pidfile": "/var/osquery/osquery.pidfile",
+    "events_expiry": "3600",
+    "database_path": "/var/osquery/osquery.db",
+    "verbose": "false",
+    "worker_threads": "2",
+    "enable_monitor": "true",
+    "disable_events": "false",
+    "disable_audit": "false",
+    "audit_allow_config": "true",
+    "host_identifier": "hostname",
+    "enable_syslog": "true",
+    "audit_allow_sockets": "true",
+    "schedule_timeout": "0",
+    "schedule_default_interval": "3600"
+  },
+
+  "schedule": {
+    "system_info": {
+      "query": "SELECT hostname, cpu_brand, physical_memory FROM system_info;",
+      "interval": 3600,
+      "description": "Retrieve system information"
+    },
+    "process_monitor": {
+      "query": "SELECT pid, name, path, cmdline, cwd, state FROM processes;",
+      "interval": 600,
+      "description": "Monitor running processes"
+    },
+    "user_sessions": {
+      "query": "SELECT * FROM logged_in_users;",
+      "interval": 600,
+      "description": "Track logged in users"
+    },
+    "network_connections": {
+      "query": "SELECT pid, path, local_address, local_port, remote_address, remote_port FROM process_open_sockets WHERE remote_port != 0;",
+      "interval": 600,
+      "description": "Monitor network connections"
+    },
+    "file_events": {
+      "query": "SELECT * FROM file_events;",
+      "interval": 300,
+      "description": "File system events"
+    }
+  },
+
+  "decorators": {
+    "load": [
+      "SELECT uuid AS host_uuid FROM system_info;",
+      "SELECT user AS username FROM logged_in_users ORDER BY time DESC LIMIT 1;"
+    ]
+  },
+
+  "packs": {
+    "osquery-monitoring": "/usr/share/osquery/packs/osquery-monitoring.conf",
+    "incident-response": "/usr/share/osquery/packs/incident-response.conf",
+    "it-compliance": "/usr/share/osquery/packs/it-compliance.conf",
+    "vuln-management": "/usr/share/osquery/packs/vuln-management.conf"
+  },
+
+  "file_paths": {
+    "etc": [
+      "/etc/%%"
+    ],
+    "tmp": [
+      "/tmp/%%"
+    ],
+    "home": [
+      "/home/%%"
+    ]
+  }
+}

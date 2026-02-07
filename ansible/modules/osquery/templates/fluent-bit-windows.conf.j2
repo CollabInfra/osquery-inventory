@@ -1,0 +1,52 @@
+[SERVICE]
+    Flush        5
+    Daemon       off
+    Log_Level    info
+    Parsers_File C:\\fluent-bit\\conf\\parsers.conf
+
+[INPUT]
+    Name              tail
+    Path              {{ osquery_log_dir }}\\osqueryd.results.log
+    Tag               osquery.results
+    Parser            json
+    DB                C:\\fluent-bit\\db\\osquery-results.db
+    Mem_Buf_Limit     5MB
+    Skip_Long_Lines   On
+    Refresh_Interval  10
+
+[FILTER]
+    Name                record_modifier
+    Match               osquery.*
+    Record              hostname ${HOSTNAME}
+    Record              environment {{ opensearch_environment | default('production') }}
+
+[FILTER]
+    Name                aws
+    Match               osquery.*
+    imds_version        v2
+    az                  true
+    ec2_instance_id     true
+    ec2_instance_type   true
+
+[OUTPUT]
+    Name                es
+    Match               osquery.*
+    Host                {{ opensearch_endpoint }}
+    Port                {{ opensearch_port | default(443) }}
+    Index               {{ opensearch_index_prefix | default('osquery') }}
+    Type                _doc
+{% if opensearch_use_basic_auth | default(false) %}
+    HTTP_User           {{ opensearch_username }}
+    HTTP_Passwd         {{ opensearch_password }}
+{% else %}
+    AWS_Auth            On
+    AWS_Region          {{ opensearch_region }}
+{% endif %}
+    tls                 On
+    tls.verify          {{ opensearch_tls_verify | default('On') }}
+    Retry_Limit         5
+    Suppress_Type_Name  On
+    Logstash_Format     On
+    Logstash_Prefix     {{ opensearch_index_prefix | default('osquery') }}
+    Logstash_DateFormat %Y.%m.%d
+    Time_Key            @timestamp

@@ -1,0 +1,12 @@
+[PARSER]
+    Name        json
+    Format      json
+    Time_Key    unixTime
+    Time_Format %s
+
+[PARSER]
+    Name        osquery_log
+    Format      regex
+    Regex       ^(?<severity>[IWEF])(?<month>\d{2})(?<day>\d{2}) (?<time>\d{2}:\d{2}:\d{2}\.\d+)\s+(?<thread>\d+)\s+(?<file>[^:]+):(?<line>\d+)\]\s+(?<message>.*)$
+    Time_Key    time
+    Time_Format %H:%M:%S.%L

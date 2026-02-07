@@ -1,0 +1,29 @@
+# Ansible
+*.retry
+.vault_pass
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.Python
+env/
+venv/
+.venv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Custom
+.secrets/
+*.bak

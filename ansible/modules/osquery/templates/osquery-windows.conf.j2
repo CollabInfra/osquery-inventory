@@ -1,0 +1,52 @@
+{
+  "options": {
+    "config_plugin": "filesystem",
+    "logger_plugin": "filesystem",
+    "logger_path": "{{ osquery_log_dir }}",
+    "disable_logging": "false",
+    "log_result_events": "true",
+    "schedule_splay_percent": "10",
+    "pidfile": "C:\\ProgramData\\osquery\\osquery.pidfile",
+    "events_expiry": "3600",
+    "database_path": "C:\\ProgramData\\osquery\\osquery.db",
+    "verbose": "false",
+    "worker_threads": "2",
+    "enable_monitor": "true",
+    "host_identifier": "hostname"
+  },
+
+  "schedule": {
+    "system_info": {
+      "query": "SELECT hostname, cpu_brand, physical_memory FROM system_info;",
+      "interval": 3600,
+      "description": "Retrieve system information"
+    },
+    "process_monitor": {
+      "query": "SELECT pid, name, path, cmdline, cwd FROM processes;",
+      "interval": 600,
+      "description": "Monitor running processes"
+    },
+    "user_sessions": {
+      "query": "SELECT * FROM logged_in_users;",
+      "interval": 600,
+      "description": "Track logged in users"
+    },
+    "network_connections": {
+      "query": "SELECT pid, local_address, local_port, remote_address, remote_port FROM process_open_sockets WHERE remote_port != 0;",
+      "interval": 600,
+      "description": "Monitor network connections"
+    }
+  },
+
+  "decorators": {
+    "load": [
+      "SELECT uuid AS host_uuid FROM system_info;",
+      "SELECT user AS username FROM logged_in_users ORDER BY time DESC LIMIT 1;"
+    ]
+  },
+
+  "packs": {
+    "windows-hardening": "C:\\Program Files\\osquery\\packs\\windows-hardening.conf",
+    "windows-attacks": "C:\\Program Files\\osquery\\packs\\windows-attacks.conf"
+  }
+}

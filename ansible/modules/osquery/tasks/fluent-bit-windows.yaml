@@ -1,0 +1,41 @@
+---
+# Fluent Bit installation for Windows
+- name: Download Fluent Bit Windows installer
+  ansible.windows.win_get_url:
+    url: "https://packages.fluentbit.io/windows/fluent-bit-{{ fluent_bit_version }}-win64.exe"
+    dest: C:\Windows\Temp\fluent-bit-installer.exe
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Install Fluent Bit
+  ansible.windows.win_package:
+    path: C:\Windows\Temp\fluent-bit-installer.exe
+    arguments: /S
+    state: present
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Create Fluent Bit configuration directory
+  ansible.windows.win_file:
+    path: C:\fluent-bit\conf
+    state: directory
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit configuration for OSQuery
+  ansible.windows.win_template:
+    src: fluent-bit-windows.conf.j2
+    dest: C:\fluent-bit\conf\fluent-bit.conf
+  notify: restart fluent-bit windows
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Deploy Fluent Bit parsers configuration
+  ansible.windows.win_template:
+    src: fluent-bit-parsers.conf.j2
+    dest: C:\fluent-bit\conf\parsers.conf
+  notify: restart fluent-bit windows
+  when: enable_opensearch_forwarding | default(false)
+
+- name: Ensure Fluent Bit service is running
+  ansible.windows.win_service:
+    name: fluent-bit
+    start_mode: auto
+    state: started
+  when: enable_opensearch_forwarding | default(false)
