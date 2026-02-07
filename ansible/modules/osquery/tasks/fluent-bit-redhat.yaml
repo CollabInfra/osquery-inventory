@@ -8,14 +8,14 @@
     gpgcheck: yes
     gpgkey: https://packages.fluentbit.io/fluentbit.key
     enabled: yes
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)
 
 - name: Install Fluent Bit
   ansible.builtin.yum:
     name: fluent-bit
     state: present
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)
 
 - name: Deploy Fluent Bit configuration for OSQuery
@@ -25,7 +25,7 @@
     owner: root
     group: root
     mode: '0644'
-  become: yes
+  become: true
   notify: restart fluent-bit
   when: enable_opensearch_forwarding | default(false)
 
@@ -36,7 +36,7 @@
     owner: root
     group: root
     mode: '0644'
-  become: yes
+  become: true
   notify: restart fluent-bit
   when: enable_opensearch_forwarding | default(false)
 
@@ -45,5 +45,5 @@
     name: fluent-bit
     enabled: yes
     state: started
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)

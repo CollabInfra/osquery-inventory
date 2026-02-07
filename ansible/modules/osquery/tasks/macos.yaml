@@ -12,7 +12,7 @@
     owner: root
     group: wheel
     mode: '0755'
-  become: yes
+  become: true
 
 - name: Deploy OSQuery configuration
   ansible.builtin.template:
@@ -21,12 +21,12 @@
     owner: root
     group: wheel
     mode: '0644'
-  become: yes
+  become: true
   notify: restart osquery
 
 - name: Load OSQuery launchd service
   ansible.builtin.command: launchctl load /Library/LaunchDaemons/com.facebook.osqueryd.plist
-  become: yes
+  become: true
   register: launchctl_result
   changed_when: launchctl_result.rc == 0
   failed_when: false

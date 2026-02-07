@@ -13,7 +13,7 @@
     owner: root
     group: wheel
     mode: '0755'
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)
 
 - name: Deploy Fluent Bit configuration for OSQuery
@@ -23,7 +23,7 @@
     owner: root
     group: wheel
     mode: '0644'
-  become: yes
+  become: true
   notify: restart fluent-bit macos
   when: enable_opensearch_forwarding | default(false)
 
@@ -34,7 +34,7 @@
     owner: root
     group: wheel
     mode: '0644'
-  become: yes
+  become: true
   notify: restart fluent-bit macos
   when: enable_opensearch_forwarding | default(false)
 

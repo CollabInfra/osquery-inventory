@@ -2,7 +2,7 @@
 # Main playbook for OSQuery deployment
 - name: Deploy OSQuery across multiple platforms
   hosts: all
-  become: yes
+  become: true
   
   roles:
     - osquery

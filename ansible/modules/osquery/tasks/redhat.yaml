@@ -4,7 +4,7 @@
   ansible.builtin.rpm_key:
     key: https://pkg.osquery.io/rpm/GPG
     state: present
-  become: yes
+  become: true
 
 - name: Add OSQuery repository
   ansible.builtin.yum_repository:
@@ -14,13 +14,13 @@
     gpgcheck: yes
     gpgkey: https://pkg.osquery.io/rpm/GPG
     enabled: yes
-  become: yes
+  become: true
 
 - name: Install OSQuery
   ansible.builtin.yum:
     name: osquery
     state: present
-  become: yes
+  become: true
 
 - name: Create OSQuery log directory
   ansible.builtin.file:
@@ -29,7 +29,7 @@
     owner: root
     group: root
     mode: '0755'
-  become: yes
+  become: true
 
 - name: Deploy OSQuery configuration
   ansible.builtin.template:
@@ -38,7 +38,7 @@
     owner: root
     group: root
     mode: '0644'
-  become: yes
+  become: true
   notify: restart osquery
 
 - name: Enable and start OSQuery service
@@ -46,7 +46,7 @@
     name: osqueryd
     enabled: yes
     state: started
-  become: yes
+  become: true
 
 # Include Fluent Bit installation tasks
 - name: Include Fluent Bit tasks

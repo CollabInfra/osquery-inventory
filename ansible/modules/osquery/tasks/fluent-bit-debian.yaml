@@ -4,7 +4,7 @@
   ansible.builtin.apt_key:
     url: https://packages.fluentbit.io/fluentbit.key
     state: present
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)
 
 - name: Add Fluent Bit repository
@@ -12,20 +12,20 @@
     repo: "deb https://packages.fluentbit.io/{{ ansible_distribution | lower }}/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main"
     state: present
     filename: fluent-bit
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)
 
 - name: Update apt cache for Fluent Bit
   ansible.builtin.apt:
     update_cache: yes
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)
 
 - name: Install Fluent Bit
   ansible.builtin.apt:
     name: fluent-bit
     state: present
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)
 
 - name: Deploy Fluent Bit configuration for OSQuery
@@ -35,7 +35,7 @@
     owner: root
     group: root
     mode: '0644'
-  become: yes
+  become: true
   notify: restart fluent-bit
   when: enable_opensearch_forwarding | default(false)
 
@@ -46,7 +46,7 @@
     owner: root
     group: root
     mode: '0644'
-  become: yes
+  become: true
   notify: restart fluent-bit
   when: enable_opensearch_forwarding | default(false)
 
@@ -55,5 +55,5 @@
     name: fluent-bit
     enabled: yes
     state: started
-  become: yes
+  become: true
   when: enable_opensearch_forwarding | default(false)

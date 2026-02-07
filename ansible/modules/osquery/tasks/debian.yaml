@@ -4,25 +4,25 @@
   ansible.builtin.apt_key:
     url: https://pkg.osquery.io/deb/pubkey.gpg
     state: present
-  become: yes
+  become: true
 
 - name: Add OSQuery repository
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64] https://pkg.osquery.io/deb deb main"
     state: present
     filename: osquery
-  become: yes
+  become: true
 
 - name: Update apt cache
   ansible.builtin.apt:
     update_cache: yes
-  become: yes
+  become: true
 
 - name: Install OSQuery
   ansible.builtin.apt:
     name: osquery
     state: present
-  become: yes
+  become: true
 
 - name: Create OSQuery log directory
   ansible.builtin.file:
@@ -31,7 +31,7 @@
     owner: root
     group: root
     mode: '0755'
-  become: yes
+  become: true
 
 - name: Deploy OSQuery configuration
   ansible.builtin.template:
@@ -40,7 +40,7 @@
     owner: root
     group: root
     mode: '0644'
-  become: yes
+  become: true
   notify: restart osquery
 
 - name: Enable and start OSQuery service
@@ -48,7 +48,7 @@
     name: osqueryd
     enabled: yes
     state: started
-  become: yes
+  become: true
 
 # Include Fluent Bit installation tasks
 - name: Include Fluent Bit tasks
