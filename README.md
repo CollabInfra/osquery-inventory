@@ -125,6 +125,7 @@ Les templates de configuration incluent :
   - Surveillance des processus (toutes les 10 min)
   - Sessions utilisateur (toutes les 10 min)
   - Connexions réseau (toutes les 10 min)
+  - Inventaire logiciels (VSCode, JetBrains, Homebrew, Chocolatey)
 - **Packs de sécurité** configurés
 
 ## 🎯 Utilisation

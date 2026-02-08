@@ -35,6 +35,21 @@
       "query": "SELECT pid, local_address, local_port, remote_address, remote_port FROM process_open_sockets WHERE remote_port != 0;",
       "interval": 600,
       "description": "Monitor network connections"
+    },
+    "vscode_extensions": {
+      "query": "SELECT u.username, f.path, f.filename, json_extract(fc.data, '$.name') AS extension_name, json_extract(fc.data, '$.version') AS version, json_extract(fc.data, '$.publisher') AS publisher FROM users u CROSS JOIN file f ON f.path LIKE 'C:\\Users\\' || u.username || '\\.vscode\\extensions\\%\\package.json' CROSS JOIN file fc ON fc.path = f.path WHERE f.filename = 'package.json';",
+      "interval": 3600,
+      "description": "VSCode extensions installed per user"
+    },
+    "jetbrains_plugins": {
+      "query": "SELECT u.username, f.directory, f.filename FROM users u CROSS JOIN file f ON f.directory LIKE 'C:\\Users\\' || u.username || '\\AppData\\Roaming\\JetBrains\\%\\plugins\\%' WHERE f.filename LIKE '%.jar' OR f.filename = 'plugin.xml';",
+      "interval": 3600,
+      "description": "JetBrains IDE plugins installed per user"
+    },
+    "chocolatey_packages": {
+      "query": "SELECT name, version, summary FROM chocolatey_packages;",
+      "interval": 3600,
+      "description": "Chocolatey packages installed"
     }
   },
 
