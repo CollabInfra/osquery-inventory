@@ -4,7 +4,6 @@
     "logger_plugin": "filesystem",
     "logger_path": "{{ osquery_log_dir }}",
     "disable_logging": "false",
-    "log_result_events": "true",
     "schedule_splay_percent": "10",
     "pidfile": "/var/osquery/osquery.pidfile",
     "events_expiry": "3600",
@@ -20,38 +19,28 @@
       "interval": 3600,
       "description": "Retrieve system information"
     },
-    "process_monitor": {
-      "query": "SELECT pid, name, path, cmdline, cwd, state FROM processes;",
-      "interval": 600,
-      "description": "Monitor running processes"
-    },
     "user_sessions": {
       "query": "SELECT * FROM logged_in_users;",
-      "interval": 600,
+      "interval": 3600,
       "description": "Track logged in users"
     },
-    "network_connections": {
-      "query": "SELECT pid, path, local_address, local_port, remote_address, remote_port FROM process_open_sockets WHERE remote_port != 0;",
-      "interval": 600,
-      "description": "Monitor network connections"
-    },
     "vscode_extensions": {
-      "query": "SELECT u.username, f.path, f.filename, json_extract(fc.data, '$.name') AS extension_name, json_extract(fc.data, '$.version') AS version, json_extract(fc.data, '$.publisher') AS publisher FROM users u CROSS JOIN file f ON f.path LIKE '/Users/' || u.username || '/.vscode/extensions/%/package.json' CROSS JOIN file fc ON fc.path = f.path WHERE f.filename = 'package.json';",
+      "query": "SELECT u.username, vsc.vscode_edition, vsc.path, vsc.name AS extension_name, vsc.version AS version, vsc.publisher AS publisher, vsc.installed_at, vsc.publisher_id AS publisher_id FROM users u CROSS JOIN vscode_extensions vsc ON u.uid = vsc.uid;",
       "interval": 3600,
       "description": "VSCode extensions installed per user"
     },
     "jetbrains_plugins": {
-      "query": "SELECT u.username, f.directory, f.filename FROM users u CROSS JOIN file f ON f.directory LIKE '/Users/' || u.username || '/Library/Application Support/JetBrains/%/plugins/%' WHERE f.filename LIKE '%.jar' OR f.filename = 'plugin.xml';",
+      "query": "SELECT u.username, jbp.path, jbp.name AS extension_name, jbp.version AS version, jbp.vendor AS publisher FROM users u CROSS JOIN jetbrains_plugins jbp ON u.uid = jbp.uid;",
       "interval": 3600,
       "description": "JetBrains IDE plugins installed per user"
     },
     "homebrew_packages": {
-      "query": "SELECT name, version, source FROM homebrew_packages;",
+      "query": "SELECT name, version, path FROM homebrew_packages where type = 'formula';",
       "interval": 3600,
       "description": "Homebrew formulas installed"
     },
     "homebrew_casks": {
-      "query": "SELECT name, version FROM homebrew_casks;",
+      "query": "SELECT name, version, path FROM homebrew_packages where type = 'cask';",
       "interval": 3600,
       "description": "Homebrew casks installed"
     }
