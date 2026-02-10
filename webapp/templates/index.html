@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSQuery Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🔍 OSQuery Dashboard</h1>
+                <p style="margin-top: 8px;">
+                    <a href="/homebrew" style="color: var(--primary-color); text-decoration: none; font-weight: 600; margin-right: 20px;">
+                        🍺 Voir les packages Homebrew →
+                    </a>
+                    <a href="/vscode-extensions" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                        📦 Voir les extensions VSCode →
+                    </a>
+                </p>
+            </div>
+            <div class="health-status" id="healthStatus">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Chargement...</span>
+            </div>
+        </header>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <h3>Événements (24h)</h3>
+                <p class="stat-value" id="total24h">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Hôtes actifs</h3>
+                <p class="stat-value" id="hostnameCount">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Environnements</h3>
+                <p class="stat-value" id="environmentCount">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Index</h3>
+                <p class="stat-value" id="indexCount">-</p>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="chart-section">
+            <h2>Événements par heure (24h)</h2>
+            <canvas id="eventsChart"></canvas>
+        </section>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <h2>Rechercher les logs</h2>
+            <div class="search-form">
+                <div class="form-row">
+                    <input type="text" id="searchQuery" placeholder="Recherche libre..." class="search-input">
+                    <select id="hostnameFilter" class="filter-select">
+                        <option value="">Tous les hôtes</option>
+                    </select>
+                    <select id="environmentFilter" class="filter-select">
+                        <option value="">Tous les environnements</option>
+                    </select>
+                    <select id="timeRange" class="filter-select">
+                        <option value="1h">Dernière heure</option>
+                        <option value="6h">6 dernières heures</option>
+                        <option value="24h" selected>24 dernières heures</option>
+                        <option value="7d">7 derniers jours</option>
+                    </select>
+                    <button onclick="searchLogs()" class="btn-primary">Rechercher</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="results-header">
+                <h2>Résultats</h2>
+                <span id="resultsCount" class="results-count"></span>
+            </div>
+            <div id="resultsContainer" class="results-container">
+                <p class="placeholder">Utilisez la recherche ci-dessus pour afficher les logs</p>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

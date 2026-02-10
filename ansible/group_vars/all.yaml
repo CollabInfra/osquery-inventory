@@ -1,0 +1,46 @@
+---
+# Example group_vars for OSQuery deployment
+# Copy this file to group_vars/all.yaml and customize
+
+# OSQuery log directories per OS
+osquery_log_dir: "/var/log/osquery"
+osquery_log_dir_windows: "C:\\ProgramData\\osquery\\log"
+osquery_log_dir_macos: "/var/log/osquery"
+
+# OSQuery version (Windows)
+osquery_version: "5.11.0"
+
+# Fluent Bit version (Windows)
+fluent_bit_version: "2.2.2"
+
+# ===== AWS OpenSearch Configuration =====
+# Enable to forward OSQuery logs to AWS OpenSearch
+enable_opensearch_forwarding: true
+
+# AWS OpenSearch endpoint (without https://)
+opensearch_endpoint: "osquery-logs-prod.us-east-1.opensearch.localhost.localstack.cloud:4566"
+
+# AWS Region where OpenSearch is deployed
+opensearch_region: "us-east-1"
+
+# OpenSearch port (default: 443 for HTTPS)
+opensearch_port: 443
+
+# Index prefix for OSQuery logs
+opensearch_index_prefix: "osquery-"
+
+# Environment tag (production, staging, development)
+opensearch_environment: "production"
+
+# TLS verification (On/Off)
+opensearch_tls_verify: "Off"
+
+# Alternative: Basic Auth for self-managed OpenSearch
+# opensearch_use_basic_auth: false
+# opensearch_username: "admin"
+# opensearch_password: "changeme"
+
+# Additional custom variables
+# osquery_enable_debug: false
+# osquery_schedule_interval: 3600
+

@@ -26,7 +26,12 @@ Projet Ansible complet pour déployer OSQuery avec envoi des logs vers AWS OpenS
          │
          ↓
 ┌─────────────────┐
-│ AWS OpenSearch  │  → Analyse et visualisation
+│ AWS OpenSearch  │  → Analyse et indexation
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│  Web Dashboard  │  → Visualisation et recherche
 └─────────────────┘
 ```
 
@@ -43,6 +48,24 @@ osquery/
 │   ├── OPENSEARCH.md                      # Guide complet OpenSearch
 │   ├── CHEATSHEET.md                      # Aide-mémoire commandes
 │   └── ANSIBLE-VAULT.md                   # Guide sécurité/Vault
+│
+├── webapp/                                  # Dashboard Web
+│   ├── README.md                           # Documentation webapp
+│   ├── DEPLOYMENT.md                       # Guide de déploiement
+│   ├── TESTING.md                          # Guide de tests
+│   ├── app.py                              # Application Flask
+│   ├── config.py                           # Configuration
+│   ├── opensearch_client.py                # Client OpenSearch
+│   ├── requirements.txt                    # Dépendances Python
+│   ├── Dockerfile                          # Image Docker
+│   ├── docker-compose.yml                  # Orchestration Docker
+│   ├── start.sh                            # Script de démarrage
+│   ├── test_setup.py                       # Tests de pré-démarrage
+│   ├── templates/                          # Templates HTML
+│   │   └── index.html                      # Interface principale
+│   └── static/                             # Assets statiques
+│       ├── style.css                       # Styles CSS
+│       └── app.js                          # JavaScript frontend
 │
 └── ansible/                                # Projet Ansible
     ├── ansible.cfg                         # Configuration Ansible
@@ -139,6 +162,16 @@ osquery/
 - [x] Tags pour environnements
 - [x] Vaults séparés par environnement
 
+### ✅ Dashboard Web (Python/Flask)
+- [x] Interface web responsive pour visualisation des données
+- [x] Recherche et filtrage avancés des logs OSQuery
+- [x] Graphiques en temps réel des événements
+- [x] API REST pour interrogation programmatique
+- [x] Support authentification IAM AWS et Basic Auth
+- [x] Déploiement Docker et systemd
+- [x] Pagination et navigation intuitive
+- [x] Monitoring de la santé du système
+
 ## 📊 Cas d'Usage
 
 ### 1. Surveillance de Sécurité
@@ -146,6 +179,16 @@ osquery/
 enable_opensearch_forwarding: true
 opensearch_index_prefix: "security-osquery"
 # Monitoring en temps réel des processus, connexions, fichiers
+# Visualisation via le dashboard web
+```
+
+### 2. Dashboard de Visualisation
+```bash
+# Démarrer le dashboard web
+cd webapp
+./start.sh
+# Accéder à http://localhost:5000
+# Rechercher, filtrer et analyser les données OSQuery
 ```
 
 ### 2. Conformité IT

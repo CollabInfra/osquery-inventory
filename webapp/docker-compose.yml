@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  osquery-dashboard:
+    build: .
+    container_name: osquery-dashboard
+    ports:
+      - "5001:5001"
+    environment:
+      # OpenSearch Configuration
+      - OPENSEARCH_HOST=${OPENSEARCH_HOST}
+      - OPENSEARCH_PORT=${OPENSEARCH_PORT:-443}
+      - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
+      - OPENSEARCH_VERIFY_CERTS=${OPENSEARCH_VERIFY_CERTS:-true}
+      - OPENSEARCH_INDEX_PREFIX=${OPENSEARCH_INDEX_PREFIX:-osquery-}
+      
+      # AWS Configuration
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      
+      # Basic Auth (alternative)
+      - OPENSEARCH_USERNAME=${OPENSEARCH_USERNAME}
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_PASSWORD}
+      
+      # Flask Configuration
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - FLASK_DEBUG=${FLASK_DEBUG:-false}
+      - SECRET_KEY=${SECRET_KEY}
+      
+      # App Configuration
+      - HOST=0.0.0.0
+      - PORT=5001
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - osquery-network
+
+networks:
+  osquery-network:
+    driver: bridge
